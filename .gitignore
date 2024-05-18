@@ -1,3 +1,14 @@
 .DS_Store
 Pipfile
 Pipfile.lock
+
+# Ignore Python bytecode files
+*.py[cod]
+__pycache__/
+auctions/__pycache__/
+commerce/__pycache__/
+db.sqlite3
+
+*.css
+*.css.map
+!*.scss
