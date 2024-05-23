@@ -1,6 +1,7 @@
 .DS_Store
 Pipfile
 Pipfile.lock
+.vscode/
 
 # Ignore Python bytecode files
 *.py[cod]
