@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from .models import User, Category, Listing, Bid, Comment, Watchlist
 from .forms import NewListingForm
@@ -57,9 +57,9 @@ def register(request):
 
         # Attempt to create new user
         try:
-            user = User.objects.create_user(
-                username, first_name, last_name, email, password
-            )
+            user = User.objects.create_user(username, email, password)
+            user.first_name = first_name
+            user.last_name = last_name
             user.save()
         except IntegrityError:
             return render(
@@ -101,3 +101,15 @@ def create_listing(request):
             "auctions/create.html",
             {"form": NewListingForm(), "categories": categories},
         )
+
+
+def listing(request, listing_id):
+    try:
+        listing = Listing.objects.get(pk=listing_id)
+    except Listing.DoesNotExist:
+        listing = None
+    if request.method == "POST":
+        listing.active = False
+        listing.save()
+
+    return render(request, "auctions/listing.html", {"listing": listing})

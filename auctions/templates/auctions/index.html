@@ -6,7 +6,7 @@
 
     <div class="active-listings-grid">
         {% for listing in listings %}
-            <a class="active-listing-link" href="#">
+            <a class="active-listing-link" href="{% url 'listing' listing.id %}">
                 <div class="active-listing">
                     <div class="image-container">
                         {% if listing.image_url %}

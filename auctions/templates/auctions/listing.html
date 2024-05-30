@@ -1,0 +1,64 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+
+{% block title %}
+    {{ listing_title }}
+{% endblock %}
+
+{% block body %}
+    {% if listing is None %}
+        <h2 class="listing-error-msg">Sorry Listing Does Not Exist.</h2>
+    {% endif %}
+    <div class="wrapper-container">
+        <div class="listing-container">
+            <div class="listing-content">
+                <div class="listing-info">
+                    <h3>{{ listing.title }}</h3>
+                    <h5>{{ listing.description }}</h5>
+                    <div><span>${{ listing.price|floatformat:2 }}</span></div>
+                    <div><span>Bid(s) Currently</span></div>
+                    <div><span>Highest Bid</span></div>
+                    {% if request.user == listing.seller %}
+                        <form action="{% url 'listing' listing.id %}" method="post">
+                            {% csrf_token %}
+                            {% if listing.active %}
+                                <input class="btn btn-primary close-listing-btn" type="submit" value="Close Listing">
+                            {% else %}
+                                <div class="alert alert-success d-flex align-items-center" role="alert">
+                                    <svg class="bi flex-shrink-0 me-2" width="20" height="20" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+                                    <div>
+                                        &nbsp;Your listing was successfully closed!
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </form>
+                    {% else %}
+                        {% if user.is_authenticated and listing.active %}
+                            <form action="#">
+                                {% csrf_token %}
+                                <input class="form-control bid-input" type="number" name="bid">
+                                <input class="btn btn-primary bid-btn" type="submit" value="Place Bid">
+                            </form>
+                        {% elif listing.active %}
+                            <div class="login-alert">
+                                <a href="{% url 'login' %}">Login to start bidding</a>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-danger" role="alert">
+                                This listing is closed for bidding.
+                            </div>
+                        {% endif %}
+                        <div class="listing-seller"><span>Sold By: {{ listing.seller }}</span></div>
+                    {% endif %}
+                    <div class="listing-date"><span>Posted: {{ listing.datetime|date:"N d, Y" }}</span></div>
+                </div>
+                <div class="listing-img">
+                    <img src="{{ listing.image_url }}" alt="">
+                </div>
+            </div>
+            <div class="listing-comments">
+                Listing Comments
+            </div>
+        </div>
+    </div>
+{% endblock %}
