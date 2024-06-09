@@ -23,11 +23,13 @@ class Listing(models.Model):
     category = models.ForeignKey(
         Category,
         on_delete=models.CASCADE,
-        related_name="listings",
+        related_name="category_listings",
         blank=True,
         null=True,
     )
-    seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name="listings")
+    seller = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="user_listings"
+    )
     datetime = models.DateTimeField(auto_now_add=True)
     active = models.BooleanField(default=True)
 
@@ -36,18 +38,24 @@ class Listing(models.Model):
 
 
 class Bid(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bids")
-    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="bids")
-    bid = models.FloatField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_bids")
+    listing = models.ForeignKey(
+        Listing, on_delete=models.CASCADE, related_name="listing_bids"
+    )
+    bid_amount = models.FloatField()
 
     def __str__(self):
-        return f"${self.bid:.2f} {self.user.get_full_name()} {self.listing.title}"
+        return (
+            f"${self.bid_amount:.2f} {self.user.get_full_name()} {self.listing.title}"
+        )
 
 
 class Comment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="user_comments"
+    )
     listing = models.ForeignKey(
-        Listing, on_delete=models.CASCADE, related_name="comments"
+        Listing, on_delete=models.CASCADE, related_name="listing_comments"
     )
     comment = models.TextField()
     datetime = models.DateTimeField(auto_now_add=True)
@@ -57,8 +65,10 @@ class Comment(models.Model):
 
 
 class Watchlist(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="watchlist")
-    listings = models.ManyToManyField(Listing, related_name="watchlist")
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="user_watchlist"
+    )
+    listings = models.ManyToManyField(Listing, related_name="listing_watchlist")
 
     def __str__(self):
         return f"{self.user.get_full_name()}"

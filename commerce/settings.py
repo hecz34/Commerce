@@ -121,6 +121,7 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 
+# Added code
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 USE_THOUSAND_SEPARATOR = True

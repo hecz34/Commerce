@@ -1,4 +1,4 @@
-{% extends "auctions/layout.html" %}
+ {% extends "auctions/layout.html" %}
 
 {% block title %}
     Register
@@ -10,7 +10,7 @@
             <h2>Register</h2>
 
             {% if message %}
-                <div>{{ message }}</div>
+                <div class="login-register-msg">{{ message }}</div>
             {% endif %}
 
             <form action="{% url 'register' %}" method="post">

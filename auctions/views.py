@@ -4,6 +4,8 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
+from django.views.decorators.http import require_POST
+from django.db.models import Max
 from .models import User, Category, Listing, Bid, Comment, Watchlist
 from .forms import NewListingForm
 
@@ -61,6 +63,7 @@ def register(request):
             user.first_name = first_name
             user.last_name = last_name
             user.save()
+            Watchlist.objects.create(user=user)
         except IntegrityError:
             return render(
                 request,
@@ -94,22 +97,101 @@ def create_listing(request):
                 seller=request.user,
             )
             return HttpResponseRedirect(reverse("index"))
-    else:
-        categories = Category.objects.all().order_by("name")
-        return render(
-            request,
-            "auctions/create.html",
-            {"form": NewListingForm(), "categories": categories},
-        )
+
+    return render(
+        request,
+        "auctions/create.html",
+        {"form": NewListingForm(), "is_editing": False},
+    )
+
+
+@login_required
+def edit_listing(request, listing_id):
+    listing = get_object_or_404(Listing, pk=listing_id)
+    if request.method == "POST":
+        form = NewListingForm(request.POST, instance=listing)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+
+    return render(
+        request,
+        "auctions/create.html",
+        {
+            "form": NewListingForm(instance=listing),
+            "is_editing": True,
+            "listing_id": listing_id,
+        },
+    )
 
 
 def listing(request, listing_id):
-    try:
-        listing = Listing.objects.get(pk=listing_id)
-    except Listing.DoesNotExist:
-        listing = None
-    if request.method == "POST":
-        listing.active = False
-        listing.save()
+    listing = get_object_or_404(Listing, pk=listing_id)
+    highest_bid = listing.listing_bids.order_by("-bid_amount").first()
+    comments = listing.listing_comments.all()
+    bid_msg = None
+    in_watchlist = None
+    if request.user.is_authenticated:
+        in_watchlist = Watchlist.objects.filter(
+            user=request.user, listings=listing
+        ).exists()
 
-    return render(request, "auctions/listing.html", {"listing": listing})
+    if request.method == "POST":
+        user_bid = float(request.POST.get("bid"))
+        if user_bid > listing.price:
+            if highest_bid and user_bid <= highest_bid.bid_amount:
+                bid_msg = "error"
+            else:
+                bid_msg = "success"
+                if existing_bid := listing.listing_bids.filter(
+                    user=request.user
+                ).first():
+                    existing_bid.delete()
+                highest_bid = Bid.objects.create(
+                    user=request.user, listing=listing, bid_amount=user_bid
+                )
+        else:
+            bid_msg = "error"
+
+    # Count total bids here incase new bid is submitted.
+    total_bids = listing.listing_bids.count()
+    return render(
+        request,
+        "auctions/listing.html",
+        {
+            "listing": listing,
+            "in_watchlist": in_watchlist,
+            "total_bids": total_bids,
+            "highest_bid": highest_bid,
+            "bid_msg": bid_msg,
+            "comments": comments,
+        },
+    )
+
+
+@require_POST
+def close_listing(request, listing_id):
+    listing = get_object_or_404(Listing, pk=listing_id)
+    listing.active = False
+    listing.save()
+    return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+
+
+@require_POST
+def watchlist(request, listing_id):
+    listing = get_object_or_404(Listing, pk=listing_id)
+    watchlist = Watchlist.objects.get(user=request.user)
+    action = request.POST.get("action")
+    if action == "add_to_watchlist":
+        watchlist.listings.add(listing)
+    else:
+        watchlist.listings.remove(listing)
+    return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+
+
+@require_POST
+def comment(request, listing_id):
+    listing = get_object_or_404(Listing, pk=listing_id)
+    comment = request.POST.get("comment")
+    Comment.objects.create(user=request.user, listing=listing, comment=comment)
+    return HttpResponseRedirect(reverse("listing", args=(listing_id,)))

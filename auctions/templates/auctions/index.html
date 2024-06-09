@@ -3,7 +3,6 @@
 
 {% block body %}
     <h2 class="active-listings-title">Active Listings</h2>
-
     <div class="active-listings-grid">
         {% for listing in listings %}
             <a class="active-listing-link" href="{% url 'listing' listing.id %}">

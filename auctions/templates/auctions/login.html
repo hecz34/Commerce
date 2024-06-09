@@ -9,7 +9,7 @@
         <div class="login-register-container">
             <h2>Login</h2>
             {% if message %}
-                <div>{{ message }}</div>
+                <div class="login-register-msg">{{ message }}</div>
             {% endif %}
             <form action="{% url 'login' %}" method="post">
                 {% csrf_token %}

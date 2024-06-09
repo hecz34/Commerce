@@ -20,7 +20,7 @@
         <div class="nav-container">
             <div class="title">
                 <h1>Auctions</h1>
-                <div>
+                <div class="signed-in-user">
                     {% if user.is_authenticated %}
                         Signed in as&nbsp;<strong>{{ user.username }}</strong>
                     {% else %}

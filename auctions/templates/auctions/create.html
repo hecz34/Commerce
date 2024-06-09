@@ -1,14 +1,24 @@
 {% extends "auctions/layout.html" %}
 
 {% block title %}
-    Create Listing
+    {% if is_editing %}
+        Edit Listing
+    {% else %}
+        Create Listing
+    {% endif %}
 {% endblock %}
 
 {% block body %}
     <div class="wrapper-container">
         <div class="create-container">
-            <h2>Create Listing</h2>
-            <form action="{% url 'create' %}" method="post">
+            <h2>
+                {% if is_editing %}
+                    Edit Listing
+                {% else %}
+                    Create Listing
+                {% endif %}
+            </h2>
+            <form action="{% if is_editing %}{% url 'edit_listing' listing_id %}{% else %}{% url 'create' %}{% endif %}" method="post">
                 {% csrf_token %}
                 {% for field in form %}
                     <div class="form-group">
@@ -16,17 +26,8 @@
                         {{ field }}
                     </div>
                 {% endfor %}
-                <div class="form-group">
-                    <label>Category</label>
-                    <select class="custom-select" name="category">
-                        <option value=""></option>
-                        {% for category in categories %}
-                            <option value="{{ category.id }}">{{ category }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
                 <div class="btn-container">
-                    <input class="btn btn-primary" type="submit" value="Publish">
+                    <input class="btn btn-primary" type="submit" value="{% if is_editing %} Save Changes {% else %} Create Listing {% endif %}">
                 </div>
             </form>
         </div>
