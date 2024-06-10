@@ -177,16 +177,21 @@ def close_listing(request, listing_id):
     return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
 
 
-@require_POST
-def watchlist(request, listing_id):
-    listing = get_object_or_404(Listing, pk=listing_id)
+@login_required
+def watchlist(request, listing_id=None):
     watchlist = Watchlist.objects.get(user=request.user)
-    action = request.POST.get("action")
-    if action == "add_to_watchlist":
-        watchlist.listings.add(listing)
-    else:
-        watchlist.listings.remove(listing)
-    return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+    if request.method == "POST":
+        listing = get_object_or_404(Listing, pk=listing_id)
+        action = request.POST.get("action")
+        if action == "add_to_watchlist":
+            watchlist.listings.add(listing)
+        else:
+            watchlist.listings.remove(listing)
+        return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+
+    return render(
+        request, "auctions/watchlist.html", {"listings": watchlist.listings.all()}
+    )
 
 
 @require_POST

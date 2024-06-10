@@ -1,17 +1,21 @@
 {% extends "auctions/layout.html" %}
 {% load static %}
 
+{% block title %}
+    Watchlist
+{% endblock %}
+
 {% block body %}
-    <h2 class="active-listings-title">Active Listings</h2>
+    <h2 class="watchlist-listings-title">Watchlist</h2>
     {% if not listings %}
         <div class="no-listings-msg">
-            <h5>No Active Listings.</h5>
+            <h5>No Listings.</h5>
         </div>
     {% endif %}
-    <div class="active-listings-grid">
+    <div class="watchlist-listings-grid">
         {% for listing in listings %}
-            <a class="active-listing-link" href="{% url 'listing' listing.id %}">
-                <div class="active-listing">
+            <a class="watchlist-listing-link" href="{% url 'listing' listing.id %}">
+                <div class="watchlist-listing">
                     <div class="image-container">
                         {% if listing.image_url %}
                             <img src="{{ listing.image_url }}" alt="">

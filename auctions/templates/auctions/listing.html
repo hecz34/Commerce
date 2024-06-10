@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block body %}
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated and listing.active %}
         <div class="watchlist-btn-container">
             {% if request.user == listing.seller %}
                 <form action="{% url 'edit_listing' listing.id %}" method="get">
@@ -15,7 +15,7 @@
                     <input type="submit" class="btn btn-primary" value="Edit Listing">
                 </form>
             {% else %}
-                <form action="{% url 'watchlist' listing.id %}" method="post">
+                <form action="{% url 'watchlist_add_remove' listing.id %}" method="post">
                     {% csrf_token %}
                     {% if in_watchlist %}
                         <input type="hidden" name="action", value="stop_watching">
@@ -26,6 +26,12 @@
                     {% endif %}
                 </form>
             {% endif %}
+        </div>
+    {% elif not listing.active and request.user == highest_bid.user %}
+        <div class="winner-alert-container">
+            <div class="alert alert-success" role="alert">
+                🎊 Congratulations You Are The Winner Of This Auction! 🎊
+            </div>
         </div>
     {% endif %}
     <div class="listing-container">
@@ -79,7 +85,7 @@
                             <a href="{% url 'login' %}">Login to start bidding</a>
                         </div>
                     {% else %}
-                        <div class="alert alert-danger" role="alert">
+                        <div class="alert alert-danger closed-msg" role="alert">
                             This listing is closed for bidding.
                         </div>
                     {% endif %}
@@ -99,7 +105,7 @@
         </div>
         <div class="listing-comments">
             <h3>Comments & Questions</h3>
-            {% if user.is_authenticated %}
+            {% if user.is_authenticated and listing.active %}
                 <h5>Leave a comment or question about this listing</h5>
                 <form action="{% url 'comment' listing.id %}" method="post">
                     {% csrf_token %}
