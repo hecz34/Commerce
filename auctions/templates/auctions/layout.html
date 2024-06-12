@@ -18,7 +18,7 @@
         </svg>
           
         <div class="nav-container">
-            <div class="title">
+            <div class="nav-title">
                 <h1>Auctions</h1>
                 <div class="signed-in-user">
                     {% if user.is_authenticated %}
@@ -34,6 +34,9 @@
                         <a class="nav-link" href="{% url 'index' %}">Active Listings</a>
                     </li>
                     {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'categories' %}">Categories</a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'watchlist' %}">Watchlist</a>
                         </li>

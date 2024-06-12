@@ -179,7 +179,8 @@ def close_listing(request, listing_id):
 
 @login_required
 def watchlist(request, listing_id=None):
-    watchlist = Watchlist.objects.get(user=request.user)
+    watchlist = get_object_or_404(Watchlist, user=request.user)
+    # watchlist = Watchlist.objects.get(user=request.user)
     if request.method == "POST":
         listing = get_object_or_404(Listing, pk=listing_id)
         action = request.POST.get("action")
@@ -190,7 +191,9 @@ def watchlist(request, listing_id=None):
         return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
 
     return render(
-        request, "auctions/watchlist.html", {"listings": watchlist.listings.all()}
+        request,
+        "auctions/listings.html",
+        {"title": "Watchlist", "listings": watchlist.listings.all()},
     )
 
 
@@ -200,3 +203,18 @@ def comment(request, listing_id):
     comment = request.POST.get("comment")
     Comment.objects.create(user=request.user, listing=listing, comment=comment)
     return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+
+
+def categories(request):
+    categories = Category.objects.all().order_by("name")
+    return render(request, "auctions/categories.html", {"categories": categories})
+
+
+def category(request, category_id):
+    category = get_object_or_404(Category, pk=category_id)
+    listings = category.category_listings.filter(active=True).all()
+    return render(
+        request,
+        "auctions/listings.html",
+        {"title": f"{category.name} Listings", "listings": listings},
+    )

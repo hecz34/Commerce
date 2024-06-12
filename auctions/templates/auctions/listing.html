@@ -50,7 +50,7 @@
                             <span>Your Bid Is The Highest Bid</span>
                         </div>
                     {% endif %}
-                {% else %}
+                {% elif listing.seller != request.user %}
                     <div><span>Be The First To Bid!</span></div>
                 {% endif %}
                 {% if request.user == listing.seller %}
@@ -95,7 +95,6 @@
                 <div class="listing-category"><span>Category: {{ listing.category }}</span></div>
             </div>
             <div class="listing-img">
-                <!-- <img src="{{ listing.image_url }}" alt=""> -->
                 {% if listing.image_url %}
                     <img src="{{ listing.image_url }}" alt="">
                 {% else %}
@@ -112,6 +111,12 @@
                     <textarea name="comment" class="form-control"></textarea>
                     <input type="submit" class="btn btn-primary comment-btn" value="Post Comment">
                 </form>
+            {% else %}
+                <h5 class="login-comment-alert">
+                    <a href="{% url 'login' %}">
+                        Login to leave a comment or question.
+                    </a>
+                </h5>
             {% endif %}
             {% for comment in comments %}
                 <hr>

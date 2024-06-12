@@ -2,20 +2,20 @@
 {% load static %}
 
 {% block title %}
-    Watchlist
+    {{ title }}
 {% endblock %}
 
 {% block body %}
-    <h2 class="watchlist-listings-title">Watchlist</h2>
+    <h2 class="page-title">{{ title }}</h2>
     {% if not listings %}
         <div class="no-listings-msg">
             <h5>No Listings.</h5>
         </div>
     {% endif %}
-    <div class="watchlist-listings-grid">
+    <div class="watchlist-categories-listings-grid">
         {% for listing in listings %}
-            <a class="watchlist-listing-link" href="{% url 'listing' listing.id %}">
-                <div class="watchlist-listing">
+            <a class="watchlist-categories-listing-link" href="{% url 'listing' listing.id %}">
+                <div class="watchlist-categories-listing">
                     <div class="image-container">
                         {% if listing.image_url %}
                             <img src="{{ listing.image_url }}" alt="">
