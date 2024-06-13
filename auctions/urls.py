@@ -16,4 +16,5 @@ urlpatterns = [
     path("edit-listing/<int:listing_id>", views.edit_listing, name="edit_listing"),
     path("categories", views.categories, name="categories"),
     path("category/<int:category_id>", views.category, name="category"),
+    path("closed-listings", views.closed_listings, name="closed_listings"),
 ]

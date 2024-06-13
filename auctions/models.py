@@ -34,7 +34,7 @@ class Listing(models.Model):
     active = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.title} ID: {self.id}"
+        return f"ID: {self.id} {self.title}"
 
 
 class Bid(models.Model):
@@ -61,7 +61,7 @@ class Comment(models.Model):
     datetime = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.get_full_name()}  {self.listing.title}"
+        return f"{self.user.get_full_name()} - {self.listing.title}"
 
 
 class Watchlist(models.Model):

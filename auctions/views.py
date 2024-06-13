@@ -180,7 +180,6 @@ def close_listing(request, listing_id):
 @login_required
 def watchlist(request, listing_id=None):
     watchlist = get_object_or_404(Watchlist, user=request.user)
-    # watchlist = Watchlist.objects.get(user=request.user)
     if request.method == "POST":
         listing = get_object_or_404(Listing, pk=listing_id)
         action = request.POST.get("action")
@@ -217,4 +216,13 @@ def category(request, category_id):
         request,
         "auctions/listings.html",
         {"title": f"{category.name} Listings", "listings": listings},
+    )
+
+
+def closed_listings(request):
+    listings = Listing.objects.filter(active=False)
+    return render(
+        request,
+        "auctions/listings.html",
+        {"title": "Closed Listings", "listings": listings},
     )

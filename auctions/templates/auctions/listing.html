@@ -111,7 +111,7 @@
                     <textarea name="comment" class="form-control"></textarea>
                     <input type="submit" class="btn btn-primary comment-btn" value="Post Comment">
                 </form>
-            {% else %}
+            {% elif not user.is_authenticated %}
                 <h5 class="login-comment-alert">
                     <a href="{% url 'login' %}">
                         Login to leave a comment or question.
