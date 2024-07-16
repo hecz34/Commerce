@@ -3,7 +3,7 @@ from .models import User, Category, Listing, Bid, Comment, Watchlist
 
 
 class ListingAdmin(admin.ModelAdmin):
-    list_display = ("active", "id", "title", "category", "seller", "price")
+    list_display = ("id", "active", "title", "category", "seller", "price")
 
 
 class BidAdmin(admin.ModelAdmin):
